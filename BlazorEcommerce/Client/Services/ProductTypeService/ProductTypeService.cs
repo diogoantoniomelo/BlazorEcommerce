@@ -18,7 +18,6 @@ namespace BlazorEcommerce.Client.Services.ProductTypeService
 
         public async Task GetProductTypes()
         {
-            Console.WriteLine("parou aqui");
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<ProductType>>>("api/producttype");
             ProductTypes = result.Data;
         }
