@@ -12,12 +12,13 @@ namespace BlazorEcommerce.Client.Services.ProductTypeService
             _http = http;
         }
 
-        public List<ProductType> ProductTypes { get; set; }  new List<ProductType>();
+        public List<ProductType> ProductTypes { get; set; } = new List<ProductType>();
 
         public event Action OnChange;
 
         public async Task GetProductTypes()
         {
+            Console.WriteLine("parou aqui");
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<ProductType>>>("api/producttype");
             ProductTypes = result.Data;
         }
