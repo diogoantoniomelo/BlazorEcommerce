@@ -9,6 +9,6 @@ namespace BlazorEcommerce.Client.Services.ProductTypeService
         Task GetProductTypes();
         Task AddProductType(ProductType productType);
         Task UpdateProductType(ProductType productType);
-        ProductType CreateProductType();
+        ProductType CreateNewProductType();
     }
 }

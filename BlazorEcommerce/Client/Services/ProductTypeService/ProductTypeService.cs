@@ -19,11 +19,11 @@ namespace BlazorEcommerce.Client.Services.ProductTypeService
         public async Task AddProductType(ProductType productType)
         {
             var response = await _http.PostAsJsonAsync("api/producttype", productType);
-            ProductTypes = (await response.
+            ProductTypes = (await response.Content
                 .ReadFromJsonAsync<ServiceResponse<List<ProductType>>>()).Data;
             OnChange.Invoke();
         }
-        public ProductType CreateProductType()
+        public ProductType CreateNewProductType()
         {
             var newProductType = new ProductType
             {
@@ -45,7 +45,7 @@ namespace BlazorEcommerce.Client.Services.ProductTypeService
         public async Task UpdateProductType(ProductType productType)
         {
             var response = await _http.PutAsJsonAsync("api/producttype", productType);
-            ProductTypes = (await response.
+            ProductTypes = (await response.Content
                 .ReadFromJsonAsync<ServiceResponse<List<ProductType>>>()).Data;
             OnChange.Invoke();
         }
