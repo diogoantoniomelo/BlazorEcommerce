@@ -1,5 +1,4 @@
-﻿
-@page "/admin/product"
+﻿@page "/admin/product"
 @page "/admin/product/{id:int}"
 @inject IProductService ProductService
 @inject IProductTypeService ProductTypeService
@@ -22,7 +21,7 @@ else
     }
 
     <EditForm Model="product" OnValidSubmit="AddOrUpdateProduct">
-        <DataAnnotationsValidator></DataAnnotationsValidator>
+        
         <div class="mb-0">
             <label for="title">Title</label>
             <InputText id="title" @bind-Value="product.Title" class="form-control"></InputText>
@@ -58,13 +57,13 @@ else
                     </InputSelect>
                 </div>
                 <div class="col">
-                    <InputNumber @bind-Value="variant.Price" class="form-control" disable"="@variant.Deleted"></InputNumber>
+                    <InputNumber @bind-Value="variant.Price" class="form-control" disabled="@variant.Deleted"></InputNumber>
                 </div>
                 <div class="col">
-                    <InputNumber @bind-Value="variant.OriginalPrice" class="form-control" disable"="@variant.Deleted"></InputNumber>
+                    <InputNumber @bind-Value="variant.OriginalPrice" class="form-control" disabled="@variant.Deleted"></InputNumber>
                 </div>
                 <div class="col col-visible">
-                    <InputCheckbox @bind-Value="variant.Visible" style="transform:scale(1.5,1.5)" disable"="@variant.Deleted"></InputCheckbox>
+                    <InputCheckbox @bind-Value="variant.Visible" style="transform:scale(1.5,1.5)" disabled="@variant.Deleted"></InputCheckbox>
                 </div>
                 <div class="col">
                     <button class="btn btn-primary" disabled="@variant.Deleted" @onclick="@(() => RemoveVariant(variant.ProductTypeId))">
@@ -73,8 +72,33 @@ else
                 </div>
             </div>
         }
-        <button class="btn btn-primary" @onclick="AddVariant"></button>
+        <button class="btn btn-primary" @onclick="AddVariant">
             <i class="oi oi-plus"></i> Add Variant
+        </button>
+        <hr />
+        <div class="mb-0">
+            <label for="category">Category</label>
+            <InputSelect id="category" @bind-Value="product.CategoryId" class="form-control">
+                @foreach (var category in CategoryService.AdminCategories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <hr />
+        <div class="form-check">
+            <InputCheckbox id="featured" @bind-Value="product.Featured" class="form-check-input"></InputCheckbox>
+            <label for="featured" class="form-check-label">Featured</label>
+        </div>
+        <div class="form-check">
+            <InputCheckbox id="visible" @bind-Value="product.Visible" class="form-check-input"></InputCheckbox>
+            <label for="visible" class="form-check-label">Visible</label>
+        </div>
+        <hr />
+        <button type="submit" class="btn btn-primary float-end">
+            @btnText
+        </button>
+        <ValidationSummary></ValidationSummary>
     </EditForm>
 }
 
@@ -86,8 +110,6 @@ else
     bool loading = true;
     string btnText = "";
     string msg = "Loading...";
-
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,6 +136,7 @@ else
             product.Editing = true;
             btnText = "Update Product";
         }
+        loading = false;
     }
 
     void RemoveVariant(int productTypeId)
@@ -121,7 +144,7 @@ else
         var variant = product.Variants.Find(v => v.ProductTypeId == productTypeId);
         if (variant == null)
         {
-            return
+            return;
         }
         if (variant.IsNew)
         {
@@ -137,5 +160,20 @@ else
     {
         product.Variants
             .Add(new ProductVariant { IsNew = true, ProductId = product.Id });
+    }
+
+    async void AddOrUpdateProduct()
+    {
+        if (product.IsNew)
+        {
+            var result = await ProductService.CreateProduct(product);
+            NavigationManager.NavigateTo($"admin/product/{result.Id}");
+        }
+        else
+        {
+            product.IsNew = false;
+            product = await ProductService.UpdateProduct(product);
+            NavigationManager.NavigateTo($"admin/product/{product.Id}", true);
+        }
     }
 }
